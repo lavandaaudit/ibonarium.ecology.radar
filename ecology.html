@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IBONARIUM: ЕКОЛОГІЯ</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="ecology_style.css">
+</head>
+
+<body>
+    <div class="space-bg"></div>
+
+    <div id="map"></div>
+
+    <div class="ui-layer">
+        <header>
+            <div>
+                <h1>Ibonarium // Екологія</h1>
+                <div class="subtitle">Глобальний моніторинговий центр</div>
+            </div>
+            <div class="controls">
+                <button class="toggle-btn active" id="btn-quakes" onclick="toggleLayer('quakes')">
+                    Сейсмоактивність <span class="legend-icon icon-quake"></span>
+                </button>
+                <button class="toggle-btn" id="btn-fires" onclick="toggleLayer('fires')">
+                    Пожежі (FIRMS) <span class="legend-icon icon-fire"></span>
+                </button>
+                <button class="toggle-btn" id="btn-rad" onclick="toggleLayer('rad')">
+                    Радіаційний фон <span class="legend-icon icon-rad"></span>
+                </button>
+                <button class="toggle-btn" id="btn-air" onclick="toggleLayer('air')">
+                    Якість повітря <span class="legend-icon icon-air"></span>
+                </button>
+                <button class="toggle-btn" id="btn-anom" onclick="toggleLayer('anom')">
+                    Аномалії <span class="legend-icon icon-anom"></span>
+                </button>
+            </div>
+        </header>
+
+        <div class="data-overlay">
+            <div class="stat-row">СТАТУС МЕРЕЖІ: <span class="highlight">ОНЛАЙН</span></div>
+            <div class="stat-row">ОСТАННЄ ОНОВЛЕННЯ: <span id="last-update" class="highlight">ЗАВАНТАЖЕННЯ...</span>
+            </div>
+            <div class="stat-row" id="status-message">ОЧІКУВАННЯ ДАНИХ З СУПУТНИКІВ...</div>
+
+            <div class="stat-row" id="status-message">ОЧІКУВАННЯ ДАНИХ З СУПУТНИКІВ...</div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="ecology_script.js"></script>
+</body>
+
+</html>
