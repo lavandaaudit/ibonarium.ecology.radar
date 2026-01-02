@@ -18,8 +18,8 @@ function initMap() {
         zoomSnap: 0.5
     }).setView([20, 0], 2.5);
 
-    // CartoDB Dark Matter - ідеальна темна мапа
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    // CartoDB Light - світла основа для чистого тех-стилю
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         maxZoom: 19,
         subdomains: 'abcd'
     }).addTo(map);
