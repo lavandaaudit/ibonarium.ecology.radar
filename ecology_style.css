@@ -10,13 +10,11 @@
     --font-weight-bold: 700;
     --glow: 0 0 10px rgba(77, 210, 255, 0.4);
 }
-
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
-
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
@@ -33,19 +31,16 @@ body {
     /* Soft blue ambiance */
     box-shadow: inset 0 0 100px rgba(77, 210, 255, 0.1);
 }
-
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
     .ui-layer {
         padding: 15px;
     }
-
     header {
         flex-direction: column;
         align-items: stretch;
         gap: 15px;
     }
-
     .controls {
         text-align: left;
         display: grid;
@@ -53,24 +48,20 @@ body {
         /* 2 columns on mobile */
         gap: 8px;
     }
-
     .toggle-btn {
         justify-content: center;
         text-align: center;
         font-size: 0.8rem;
         padding: 8px;
     }
-
     h1 {
         font-size: 1.1rem;
         text-align: center;
     }
-
     .subtitle {
         text-align: center;
         margin-bottom: 10px;
     }
-
     .data-overlay {
         font-size: 0.75rem;
         background: rgba(0, 0, 0, 0.5);
@@ -80,7 +71,6 @@ body {
         backdrop-filter: blur(5px);
     }
 }
-
 /* Legend Icons */
 .legend-icon {
     display: inline-block;
@@ -92,27 +82,22 @@ body {
     vertical-align: middle;
     box-shadow: 0 0 5px currentColor;
 }
-
 .icon-quake {
     background: #ff3333;
     color: #ff3333;
 }
-
 .icon-fire {
     background: #ffaa00;
     color: #ffaa00;
 }
-
 .icon-rad {
     background: #39ff14;
     color: #39ff14;
 }
-
 .icon-air {
     background: #00f3ff;
     color: #00f3ff;
 }
-
 .icon-anom {
     background: #ffff00;
     color: #ffff00;
@@ -121,7 +106,6 @@ body {
     height: 8px;
     border-radius: 0;
 }
-
 /* Background */
 .space-bg {
     position: fixed;
@@ -136,7 +120,6 @@ body {
     z-index: -1;
     opacity: 0.8;
 }
-
 /* Map Styling */
 #map {
     position: absolute;
@@ -145,11 +128,10 @@ body {
     width: 100%;
     height: 100%;
     z-index: 0;
-    /* Reverted to Lighter Grey Style */
-    filter: brightness(2.5) contrast(0.8) grayscale(100%) hue-rotate(180deg);
-    opacity: 0.7;
+    /* Light Grey Style - subtly desaturated and brightened, not washed out */
+    filter: grayscale(100%) contrast(1.2) brightness(1.1);
+    opacity: 0.8;
 }
-
 /* UI Structure */
 .ui-layer {
     position: absolute;
@@ -161,14 +143,12 @@ body {
     flex-direction: column;
     justify-content: space-between;
 }
-
 header {
     pointer-events: auto;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
 }
-
 h1 {
     font-size: 1.2rem;
     font-weight: bold;
@@ -177,13 +157,11 @@ h1 {
     color: var(--accent-cyan);
     text-shadow: var(--glow);
 }
-
 .subtitle {
     font-size: 0.9rem;
     color: var(--text-color);
     opacity: 0.8;
 }
-
 /* Controls */
 .controls {
     pointer-events: auto;
@@ -192,7 +170,6 @@ h1 {
     flex-direction: column;
     gap: 10px;
 }
-
 .toggle-btn {
     background: transparent;
     border: 1px solid rgba(77, 210, 255, 0.3);
@@ -212,19 +189,16 @@ h1 {
     backdrop-filter: blur(2px);
     border-radius: 4px;
 }
-
 .toggle-btn:hover {
     border-color: var(--accent-cyan);
     box-shadow: var(--glow);
 }
-
 .toggle-btn.active {
     border-color: var(--accent-cyan);
     background: rgba(77, 210, 255, 0.1);
     box-shadow: var(--glow);
     color: #fff;
 }
-
 /* Bottom Data Panel */
 .data-overlay {
     pointer-events: auto;
@@ -233,23 +207,19 @@ h1 {
     background: transparent;
     padding: 0;
 }
-
 .stat-row {
     margin-top: 5px;
     display: flex;
     gap: 10px;
 }
-
 .highlight {
     color: var(--accent-green);
     text-shadow: 0 0 5px var(--accent-green);
 }
-
 /* Markers */
 .leaflet-container {
     font-family: 'Courier New', monospace;
 }
-
 .leaflet-popup-content-wrapper {
     background: rgba(0, 10, 20, 0.9);
     color: var(--text-color);
@@ -258,7 +228,6 @@ h1 {
     font-size: 0.8rem;
     padding: 2px;
 }
-
 .leaflet-popup-tip {
     background: var(--accent-cyan);
 }
