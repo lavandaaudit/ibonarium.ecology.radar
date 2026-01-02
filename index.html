@@ -1,25 +1,21 @@
 <!DOCTYPE html>
 <html lang="uk">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IBONARIUM: ЕКОЛОГІЯ</title>
+    <title>ibonarium ecology radar</title>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="ecology_style.css">
 </head>
-
 <body>
     <div class="space-bg"></div>
-
     <div id="map"></div>
-
     <div class="ui-layer">
         <header>
             <div>
                 <h1>Ibonarium // Екологія</h1>
-                <div class="subtitle">Глобальний моніторинговий центр</div>
+                <div class="subtitle">Cosmo Dynamics LAB LIVE</div>
             </div>
             <div class="controls">
                 <button class="toggle-btn active" id="btn-quakes" onclick="toggleLayer('quakes')">
@@ -39,20 +35,14 @@
                 </button>
             </div>
         </header>
-
         <div class="data-overlay">
-            <div class="stat-row">СТАТУС МЕРЕЖІ: <span class="highlight">ОНЛАЙН</span></div>
-            <div class="stat-row">ОСТАННЄ ОНОВЛЕННЯ: <span id="last-update" class="highlight">ЗАВАНТАЖЕННЯ...</span>
-            </div>
-            <div class="stat-row" id="status-message">ОЧІКУВАННЯ ДАНИХ З СУПУТНИКІВ...</div>
-
-            <div class="stat-row" id="status-message">ОЧІКУВАННЯ ДАНИХ З СУПУТНИКІВ...</div>
+            <div class="stat-row">Статус мережі: <span class="highlight">Онлайн</span></div>
+            <div class="stat-row">Останнє оновлення: <span id="last-update" class="highlight">Завантаження...</span></div>
+            <div class="stat-row" id="status-message">Очікування даних з супутників...</div>
         </div>
     </div>
-
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="ecology_script.js"></script>
 </body>
-
 </html>
