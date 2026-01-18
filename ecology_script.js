@@ -24,9 +24,9 @@ function initMap() {
         zoomControl: false,
         attributionControl: false,
         center: [20, 0],
-        zoom: 3,
-        minZoom: 1.5, // Allow zooming out to see the whole world
-        worldCopyJump: true // Seamless world panning
+        zoom: 2, // Start zoomed out
+        minZoom: 1, // Allow zooming out further
+        worldCopyJump: true
     });
 
     // Add zoom control to bottom right
