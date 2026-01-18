@@ -25,8 +25,14 @@ function initMap() {
         attributionControl: false,
         center: [20, 0],
         zoom: 3,
-        minZoom: 2.5
+        minZoom: 1.5, // Allow zooming out to see the whole world
+        worldCopyJump: true // Seamless world panning
     });
+
+    // Add zoom control to bottom right
+    L.control.zoom({
+        position: 'bottomright'
+    }).addTo(STATE.map);
 
     // Dark Matter Map Style
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
