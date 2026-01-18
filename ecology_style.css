@@ -2,7 +2,7 @@
 
 :root {
     --bg-dark: #05070a;
-    --panel-bg: rgba(10, 15, 25, 0.8);
+    --panel-bg: rgba(10, 15, 25, 0.9);
     --accent-cyan: #00f3ff;
     --accent-blue: #0072ff;
     --accent-red: #ff3333;
@@ -72,11 +72,12 @@ body {
     height: 100%;
     pointer-events: none;
     display: grid;
-    grid-template-columns: 350px 1fr;
-    /* Тільки ліва панель і карта */
-    grid-template-rows: auto 1fr auto;
-    gap: 20px;
-    padding: 25px;
+    grid-template-columns: 260px 1fr;
+    grid-template-rows: 1fr;
+    /* Full height */
+    gap: 0;
+    /* No gap needed if map is background background */
+    padding: 20px;
     z-index: 100;
 }
 
@@ -84,25 +85,26 @@ body {
     background: var(--panel-bg);
     backdrop-filter: blur(12px);
     border: 1px solid var(--border-color);
-    padding: 20px;
+    padding: 15px;
     border-radius: 4px;
     pointer-events: auto;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-/* Header */
-header.panel {
-    grid-column: 1 / 2;
     display: flex;
     flex-direction: column;
     gap: 15px;
-    max-height: 85vh;
-    /* Обмеження висоти для скролу якщо багато елементів */
-    overflow-y: auto;
+    height: 100%;
+    max-height: calc(100vh - 40px);
+}
+
+/* Header / Sidebar */
+header.panel {
+    grid-column: 1 / 2;
+    overflow-y: hidden;
+    /* No scroll requested */
 }
 
 .logo-block h1 {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 700;
     letter-spacing: 1px;
     color: var(--accent-cyan);
@@ -112,31 +114,41 @@ header.panel {
 
 .logo-block .version {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     color: var(--text-dim);
     background: rgba(0, 243, 255, 0.1);
-    padding: 2px 6px;
+    padding: 2px 4px;
     border-radius: 3px;
-    margin-left: 10px;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+.logo-block .subtitle {
+    font-size: 0.65rem;
+    opacity: 0.6;
+    margin-top: 2px;
+    letter-spacing: 0.5px;
 }
 
 /* Controls Panel */
 .controls-panel {
-    grid-column: 1 / 2;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    flex-grow: 1;
+    /* Pushes system info down */
 }
 
 .control-group-title {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     color: var(--text-dim);
     text-transform: uppercase;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    letter-spacing: 1px;
 }
 
 .control-group-title::after {
@@ -144,21 +156,40 @@ header.panel {
     height: 1px;
     flex-grow: 1;
     background: var(--border-color);
+    opacity: 0.3;
+}
+
+.layers-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
 }
 
 .toggle-btn {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(0, 243, 255, 0.1);
     color: var(--text-main);
-    padding: 12px 15px;
+    padding: 8px 10px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     font-weight: 600;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    gap: 8px;
+    transition: all 0.2s;
     border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.toggle-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.toggle-btn span {
+    flex-grow: 1;
+    white-space: nowrap;
 }
 
 .toggle-btn:hover {
@@ -169,12 +200,12 @@ header.panel {
 .toggle-btn.active {
     background: rgba(0, 243, 255, 0.15);
     border-color: var(--accent-cyan);
-    box-shadow: inset 0 0 15px rgba(0, 243, 255, 0.1), var(--glow-cyan);
+    box-shadow: inset 0 0 10px rgba(0, 243, 255, 0.1);
 }
 
 .indicator {
-    width: 6px;
-    height: 6px;
+    width: 4px;
+    height: 4px;
     border-radius: 50%;
     background: #333;
     transition: all 0.3s;
@@ -182,66 +213,71 @@ header.panel {
 
 .toggle-btn.active .indicator {
     background: var(--accent-cyan);
-    box-shadow: 0 0 10px var(--accent-cyan);
+    box-shadow: 0 0 5px var(--accent-cyan);
 }
 
-/* Analytics Panel (Removed) */
-/* Analytics Panel (Right) */
-/* .analytics-panel {
-    grid-column: 3 / 4;
-    grid-row: 1 / 3;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-} */
-
-/* .stat-card {
-    background: rgba(0, 0, 0, 0.3);
-    padding: 15px;
-    border-left: 2px solid var(--accent-blue);
+/* Charts & Analytics */
+.chart-container {
+    height: 90px;
+    width: 100%;
+    margin: 5px 0;
 }
 
-.stat-label {
-    font-size: 0.75rem;
-    color: var(--text-dim);
-    margin-bottom: 10px;
-    text-transform: uppercase;
-}
-
-.stat-value {
-    font-family: var(--font-mono);
-    font-size: 1.4rem;
-    color: #fff;
-}
-
-.stat-sub {
-    font-size: 0.8rem;
-    color: var(--accent-green);
+.threat-box {
+    background: rgba(255, 50, 50, 0.05);
+    border: 1px solid rgba(255, 50, 50, 0.2);
+    padding: 8px;
+    border-radius: 4px;
     margin-top: 5px;
-} */
+}
 
-/* Bottom Bar */
-.bottom-bar {
-    grid-column: 1 / 3;
-    /* Розтягуємо на всю ширину */
+.threat-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
+    margin-bottom: 4px;
 }
 
-.coord-display {
+.progress-bar {
+    height: 3px;
+    background: #222;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+#danger-progress {
+    height: 100%;
+    background: var(--accent-red);
+    box-shadow: 0 0 5px var(--accent-red);
+    transition: width 1s ease-out;
+}
+
+/* Compact System Info (Previously Footer) */
+.system-info-compact {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    border-top: 1px solid rgba(0, 243, 255, 0.1);
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.coord-display,
+.status-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.coord-display span,
+.status-row b {
     color: var(--accent-cyan);
 }
 
-.system-status {
-    display: flex;
-    gap: 20px;
-}
-
-.status-item span {
-    color: var(--accent-green);
+.status-msg {
+    opacity: 0.7;
+    margin-top: 2px;
 }
 
 /* Map Overlays & Popups */
@@ -295,396 +331,33 @@ header.panel {
     margin-bottom: 2px;
 }
 
-/* Legend Icon Styles */
-.icon-box {
-    width: 12px;
-    height: 12px;
-    border-radius: 2px;
-    margin-right: 8px;
-}
-
 /* Responsive Design */
 
-/* Extra Large Monitors (2K+) */
-@media (min-width: 1920px) {
-    .ui-container {
-        grid-template-columns: 400px 1fr;
-        gap: 25px;
-        padding: 30px;
-    }
-
-    .logo-block h1 {
-        font-size: 1.8rem;
-    }
-
-    .toggle-btn {
-        font-size: 0.95rem;
-        padding: 14px 18px;
-    }
-}
-
-/* Large Laptops / Desktops */
-@media (min-width: 1400px) and (max-width: 1919px) {
-    .ui-container {
-        grid-template-columns: 380px 1fr;
-    }
-}
-
-/* Standard Laptops */
-@media (min-width: 1025px) and (max-width: 1399px) {
-    .ui-container {
-        grid-template-columns: 350px 1fr;
-        gap: 18px;
-        padding: 20px;
-    }
-
-    .logo-block h1 {
-        font-size: 1.3rem;
-    }
-
-    .toggle-btn {
-        font-size: 0.8rem;
-        padding: 10px 12px;
-    }
-}
-
-/* Tablets (Portrait) */
-@media (max-width: 1024px) and (min-width: 768px) {
-    .ui-container {
-        grid-template-columns: 280px 1fr;
-        grid-template-rows: auto 1fr auto;
-        padding: 15px;
-        gap: 15px;
-    }
-
-    /* .analytics-panel {
-        display: flex;
-        grid-column: 1 / 3;
-        grid-row: 3 / 4;
-        max-height: 40vh;
-    } */
-
-    .bottom-bar {
-        grid-row: 3 / 4;
-        /* Adjusted row since analytics panel is gone */
-        grid-column: 1 / 3;
-    }
-
-    header.panel {
-        max-height: 85vh;
-        overflow-y: auto;
-    }
-
-    .logo-block h1 {
-        font-size: 1.2rem;
-    }
-
-    .toggle-btn {
-        font-size: 0.75rem;
-        padding: 10px 12px;
-    }
-
-    #quakeChart {
-        height: 120px !important;
-    }
-
-    /* .bottom-bar {
-        grid-column: 1 / 3;
-        font-size: 0.7rem;
-    } */
-}
-
-/* Mobile Phones (Large) */
-@media (max-width: 767px) and (min-width: 481px) {
+/* Mobile Phones */
+@media (max-width: 768px) {
     .ui-container {
         grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr auto;
-        padding: 12px;
-        gap: 12px;
-    }
-
-    header.panel {
-        max-height: 50vh;
-        overflow-y: auto;
-    }
-
-    /* .analytics-panel {
-        display: flex;
-        max-height: 40vh;
-        order: 2;
-    } */
-
-    .bottom-bar {
-        order: 3;
-        /* This order might need adjustment based on actual HTML structure */
-        grid-column: 1 / 2;
-        font-size: 0.65rem;
-        flex-direction: column;
-        gap: 8px;
-        align-items: flex-start;
-    }
-
-    .logo-block h1 {
-        font-size: 1.1rem;
-    }
-
-    .logo-block .version {
-        font-size: 0.6rem;
-        padding: 2px 4px;
-    }
-
-    .logo-block div {
-        font-size: 0.7rem !important;
-    }
-
-    .toggle-btn {
-        font-size: 0.7rem;
-        padding: 10px 12px;
-    }
-
-    .toggle-btn i {
-        width: 12px !important;
-    }
-
-    #quakeChart {
-        height: 100px !important;
-    }
-
-    /* .bottom-bar {
-        grid-column: 1 / 2;
-        font-size: 0.65rem;
-        flex-direction: column;
-        gap: 8px;
-        align-items: flex-start;
-    } */
-
-    .system-status {
-        gap: 10px;
-    }
-
-    .control-group-title {
-        font-size: 0.7rem;
-    }
-
-    /* Зменшено відступи для економії місця */
-    .panel {
-        padding: 15px;
-    }
-}
-
-/* Mobile Phones (Small) */
-@media (max-width: 480px) {
-    .ui-container {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr auto;
-        padding: 10px;
-        gap: 10px;
-    }
-
-    header.panel {
-        max-height: 45vh;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-
-    /* .analytics-panel {
-        display: flex;
-        max-height: 40vh;
-        order: 2;
-    } */
-
-    .bottom-bar {
-        order: 3;
-        /* This order might need adjustment based on actual HTML structure */
-        grid-column: 1 / 2;
-        font-size: 0.6rem;
-        flex-direction: column;
-        gap: 6px;
-        align-items: flex-start;
-        padding: 12px;
-    }
-
-    .logo-block h1 {
-        font-size: 0.95rem;
-        letter-spacing: 0.5px;
-    }
-
-    .logo-block .version {
-        font-size: 0.55rem;
-        padding: 1px 3px;
-        margin-left: 5px;
-    }
-
-    .logo-block div {
-        font-size: 0.65rem !important;
-        margin-top: 3px !important;
-    }
-
-    .toggle-btn {
-        font-size: 0.65rem;
-        padding: 8px 10px;
-    }
-
-    .toggle-btn span {
-        gap: 6px !important;
-    }
-
-    .toggle-btn i {
-        width: 10px !important;
-    }
-
-    .indicator {
-        width: 5px;
-        height: 5px;
-    }
-
-    #quakeChart {
-        height: 90px !important;
-    }
-
-    .control-group-title {
-        font-size: 0.65rem;
-        margin-bottom: 3px;
-    }
-
-    /* .bottom-bar {
-        grid-column: 1 / 2;
-        font-size: 0.6rem;
-        flex-direction: column;
-        gap: 6px;
-        align-items: flex-start;
-        padding: 12px;
-    } */
-
-    .system-status {
-        flex-direction: column;
-        gap: 5px;
-    }
-
-    .panel {
-        padding: 12px;
-        border-radius: 3px;
-    }
-
-    /* Оптимізація для малих екранів */
-    .scanline {
-        display: none;
-        /* Вимикаємо ефект для економії ресурсів */
-    }
-
-    /* Покращення scroll на мобільних */
-    header.panel::-webkit-scrollbar {
-        width: 3px;
-    }
-
-    header.panel::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0.2);
-    }
-
-    header.panel::-webkit-scrollbar-thumb {
-        background: var(--accent-cyan);
-        border-radius: 2px;
-    }
-}
-
-/* Landscape Mode для мобільних */
-@media (max-width: 850px) and (orientation: landscape) {
-    .ui-container {
-        grid-template-columns: 260px 1fr;
-        /* Три колонки для landscape */
-        grid-template-rows: 1fr auto;
-        gap: 10px;
+        grid-template-rows: auto 1fr;
         padding: 10px;
     }
 
+    .panel {
+        max-height: none;
+        height: auto;
+    }
+
     header.panel {
-        max-height: 90vh;
+        /* On mobile, we might need to allow scroll if it gets too tall, 
+           or collapse it. User asked for "smaller left window", but on mobile 
+           it usually becomes a bottom sheet or top bar. 
+           For now, keeping it as a top simplified block. */
+        max-height: 40vh;
         overflow-y: auto;
+        /* Allow scroll on mobile physically because screen is small */
     }
 
-    /* .analytics-panel {
-        display: flex;
-        max-height: 90vh;
-        grid-column: 3 / 4;
-        grid-row: 1 / 2;
-    } */
-
-    .bottom-bar {
-        grid-column: 1 / 3;
-        font-size: 0.65rem;
+    .layers-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+        /* More horizontal on mobile */
     }
-
-    .logo-block h1 {
-        font-size: 0.9rem;
-    }
-
-    .toggle-btn {
-        font-size: 0.65rem;
-        padding: 7px 10px;
-    }
-
-    #quakeChart {
-        height: 80px !important;
-    }
-
-    .control-group-title {
-        font-size: 0.6rem;
-    }
-}
-
-/* Touch Optimization для всіх мобільних */
-@media (hover: none) and (pointer: coarse) {
-    .toggle-btn {
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    .toggle-btn:active {
-        transform: scale(0.98);
-        transition: transform 0.1s;
-    }
-
-    /* Збільшено зони натискання */
-    .toggle-btn {
-        min-height: 44px;
-        /* Apple's recommended touch target */
-    }
-}
-
-/* Feed & Analytics Additions */
-.feed-item {
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(0, 243, 255, 0.05);
-    border-radius: 4px;
-    font-size: 0.8rem;
-    transition: transform 0.2s;
-}
-
-.feed-item:hover {
-    background: rgba(0, 243, 255, 0.05);
-    transform: translateX(5px);
-}
-
-/* Custom Scrollbar for the feed */
-#event-feed::-webkit-scrollbar {
-    width: 4px;
-}
-
-#event-feed::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.2);
-}
-
-#event-feed::-webkit-scrollbar-thumb {
-    background: var(--accent-cyan);
-    border-radius: 2px;
-}
-
-.stat-card {
-    transition: all 0.3s;
-}
-
-.stat-card:hover {
-    background: rgba(0, 243, 255, 0.05);
-    border-left-width: 4px;
 }
