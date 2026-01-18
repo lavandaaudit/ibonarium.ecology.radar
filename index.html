@@ -1,48 +1,168 @@
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IBONARIUM: ЕКОЛОГІЯ</title>
-    <!-- Leaflet CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>IBONARIUM // ECOLOGY PRO RADAR</title>
+
+    <!-- Meta -->
+    <meta name="description"
+        content="Глобальний центр екологічного моніторингу в реальному часі. Сейсмічна активність, пожежі, якість повітря.">
+    <meta name="theme-color" content="#05070a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- External Resources -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="ecology_style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <div class="space-bg"></div>
+    <div class="scanline"></div>
+
     <div id="map"></div>
-    <div class="ui-layer">
-        <header>
-            <div>
-                <h1>Ibonarium // Екологія</h1>
-                <div class="subtitle">Глобальний моніторинговий центр</div>
+
+    <div class="ui-container">
+        <!-- Sidebar Left: Navigation & Controls -->
+        <header class="panel">
+            <div class="logo-block">
+                <h1>Ibonarium <span class="version">v3.0 PRO</span></h1>
+                <div style="font-size: 0.8rem; opacity: 0.6; margin-top: 5px;">ADVANCED ECOLOGICAL ANALYTICS</div>
             </div>
-            <div class="controls">
+
+            <div class="controls-panel">
+                <div class="control-group-title">Моніторинг шарів</div>
+
                 <button class="toggle-btn active" id="btn-quakes" onclick="toggleLayer('quakes')">
-                    Сейсмоактивність <span class="legend-icon icon-quake"></span>
+                    <span style="display: flex; align-items: center; gap: 10px;">
+                        <i data-lucide="activity" style="width: 14px; color: var(--accent-red);"></i>
+                        Землетруси (Global)
+                    </span>
+                    <div class="indicator"></div>
                 </button>
+
                 <button class="toggle-btn" id="btn-fires" onclick="toggleLayer('fires')">
-                    Пожежі (FIRMS) <span class="legend-icon icon-fire"></span>
+                    <span style="display: flex; align-items: center; gap: 10px;">
+                        <i data-lucide="flame" style="width: 14px; color: var(--accent-orange);"></i>
+                        Пожежі (Hotspots)
+                    </span>
+                    <div class="indicator"></div>
                 </button>
-                <button class="toggle-btn" id="btn-rad" onclick="toggleLayer('rad')">
-                    Радіаційний фон <span class="legend-icon icon-rad"></span>
-                </button>
+
                 <button class="toggle-btn" id="btn-air" onclick="toggleLayer('air')">
-                    Якість повітря <span class="legend-icon icon-air"></span>
+                    <span style="display: flex; align-items: center; gap: 10px;">
+                        <i data-lucide="wind" style="width: 14px; color: var(--accent-cyan);"></i>
+                        Якість повітря
+                    </span>
+                    <div class="indicator"></div>
                 </button>
+
+                <button class="toggle-btn" id="btn-rad" onclick="toggleLayer('rad')">
+                    <span style="display: flex; align-items: center; gap: 10px;">
+                        <i data-lucide="radio" style="width: 14px; color: var(--accent-green);"></i>
+                        Радіаційний фон (Safecast)
+                    </span>
+                    <div class="indicator"></div>
+                </button>
+
                 <button class="toggle-btn" id="btn-anom" onclick="toggleLayer('anom')">
-                    Аномалії <span class="legend-icon icon-anom"></span>
+                    <span style="display: flex; align-items: center; gap: 10px;">
+                        <i data-lucide="alert-triangle" style="width: 14px; color: #fff;"></i>
+                        Аномалії температури
+                    </span>
+                    <div class="indicator"></div>
                 </button>
+
+
+
+                <button class="toggle-btn" id="btn-ozone" onclick="toggleLayer('ozone')">
+                    <span style="display: flex; align-items: center; gap: 10px;">
+                        <i data-lucide="shield" style="width: 14px; color: #00ccff;"></i>
+                        Озоновий шар (NASA)
+                    </span>
+                    <div class="indicator"></div>
+                </button>
+
+                <button class="toggle-btn" id="btn-wind" onclick="toggleLayer('wind')">
+                    <span style="display: flex; align-items: center; gap: 10px;">
+                        <i data-lucide="navigation" style="width: 14px; color: #66ccff;"></i>
+                        Вітрові потоки
+                    </span>
+                    <div class="indicator"></div>
+                </button>
+
+                <div class="control-group-title" style="margin-top: 10px;">Сейсмічна Аналітика</div>
+                <div style="height: 140px; width: 100%; margin: 10px 0;">
+                    <canvas id="quakeChart"></canvas>
+                </div>
+
+                <div class="control-group-title" style="margin-top: 15px;">Рівень Загрози</div>
+                <div
+                    style="background: rgba(255,50,50,0.1); border: 1px solid rgba(255,50,50,0.3); padding: 10px; border-radius: 4px; margin-top: 10px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 5px;">
+                        <span>STATUS: <b style="color:var(--accent-red)" id="danger-status">ELEVATED</b></span>
+                        <span id="danger-value">4.2/10</span>
+                    </div>
+                    <div style="height: 4px; background: #222; border-radius: 2px; overflow: hidden;">
+                        <div id="danger-progress"
+                            style="height: 100%; width: 42%; background: var(--accent-red); box-shadow: 0 0 10px var(--accent-red);">
+                        </div>
+                    </div>
+                </div>
             </div>
         </header>
-        <div class="data-overlay">
-            <div class="stat-row">Статус мережі: <span class="highlight">Онлайн</span></div>
-            <div class="stat-row">Останнє оновлення: <span id="last-update" class="highlight">Завантаження...</span></div>
-            <div class="stat-row" id="status-message">Очікування даних з супутників...</div>
-        </div>
+
+        <!-- Main Map Area (Empty helper for grid) -->
+        <div></div>
+
+        <!-- Sidebar Right: Global Event Feed -->
+        <aside class="analytics-panel panel">
+            <h3
+                style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; border-bottom: 2px solid var(--accent-red); padding-bottom: 8px; display: flex; align-items: center; gap: 10px;">
+                <i data-lucide="alert-circle" style="width: 16px;"></i> EVENT FEED (LIVE)
+            </h3>
+
+            <div id="event-feed"
+                style="display: flex; flex-direction: column; gap: 12px; overflow-y: auto; max-height: 70vh; padding-right: 5px;">
+                <div style="font-size: 0.8rem; opacity: 0.5;">Синхронізація каналів...</div>
+            </div>
+
+            <div style="margin-top: auto; padding-top: 20px;">
+                <div class="control-group-title">Енергія Подій (24г)</div>
+                <div class="stat-card"
+                    style="margin-top: 10px; padding: 12px; border-left: 2px solid var(--accent-cyan);">
+                    <div style="font-size: 1.2rem; font-family: var(--font-mono); color: #fff;" id="total-energy">0.00
+                        TJ</div>
+                    <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 2px;">Total Seismic Release</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Footer Bar -->
+        <footer class="bottom-bar panel">
+            <div class="coord-display">
+                LAT: <span id="lat">0.0000</span> | LON: <span id="lon">0.0000</span>
+            </div>
+
+            <div class="system-status">
+                <div class="status-item">NET: <span id="net-status" style="color:var(--accent-green)">STABLE</span>
+                </div>
+                <div class="status-item">SYNC: <span id="last-update">...</span></div>
+                <div class="status-item" id="status-detailed">Система ініціалізована</div>
+            </div>
+        </footer>
     </div>
-    <!-- Leaflet JS -->
+
+    <!-- Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="ecology_script.js"></script>
+    <script src="script.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
+
 </html>
