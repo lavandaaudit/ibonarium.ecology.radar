@@ -120,24 +120,31 @@
         <div></div>
 
         <!-- Sidebar Right: Global Event Feed -->
-        <aside class="analytics-panel panel">
-            <h3
-                style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; border-bottom: 2px solid var(--accent-red); padding-bottom: 8px; display: flex; align-items: center; gap: 10px;">
-                <i data-lucide="alert-circle" style="width: 16px;"></i> EVENT FEED (LIVE)
+        <aside class="analytics-panel panel" id="feed-panel">
+            <h3 onclick="toggleFeed()"
+                style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; border-bottom: 2px solid var(--accent-red); padding-bottom: 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                <span style="display: flex; align-items: center; gap: 10px;">
+                    <i data-lucide="alert-circle" style="width: 16px;"></i> EVENT FEED (LIVE)
+                </span>
+                <i data-lucide="chevron-down" id="feed-chevron" style="width: 16px; transition: transform 0.3s;"></i>
             </h3>
 
-            <div id="event-feed"
-                style="display: flex; flex-direction: column; gap: 12px; overflow-y: auto; max-height: 70vh; padding-right: 5px;">
-                <div style="font-size: 0.8rem; opacity: 0.5;">Синхронізація каналів...</div>
-            </div>
+            <div id="feed-content" style="transition: all 0.3s ease-in-out;">
+                <div id="event-feed"
+                    style="display: flex; flex-direction: column; gap: 12px; overflow-y: auto; max-height: 70vh; padding-right: 5px;">
+                    <div style="font-size: 0.8rem; opacity: 0.5;">Синхронізація каналів...</div>
+                </div>
 
-            <div style="margin-top: auto; padding-top: 20px;">
-                <div class="control-group-title">Енергія Подій (24г)</div>
-                <div class="stat-card"
-                    style="margin-top: 10px; padding: 12px; border-left: 2px solid var(--accent-cyan);">
-                    <div style="font-size: 1.2rem; font-family: var(--font-mono); color: #fff;" id="total-energy">0.00
-                        TJ</div>
-                    <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 2px;">Total Seismic Release</div>
+                <div style="margin-top: auto; padding-top: 20px;">
+                    <div class="control-group-title">Енергія Подій (24г)</div>
+                    <div class="stat-card"
+                        style="margin-top: 10px; padding: 12px; border-left: 2px solid var(--accent-cyan);">
+                        <div style="font-size: 1.2rem; font-family: var(--font-mono); color: #fff;" id="total-energy">
+                            0.00
+                            TJ</div>
+                        <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 2px;">Total Seismic Release
+                        </div>
+                    </div>
                 </div>
             </div>
         </aside>
@@ -162,6 +169,22 @@
     <script src="ecology_script.js"></script>
     <script>
         lucide.createIcons();
+
+        function toggleFeed() {
+            const content = document.getElementById('feed-content');
+            const chevron = document.getElementById('feed-chevron');
+            const panel = document.getElementById('feed-panel');
+
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                chevron.style.transform = 'rotate(0deg)';
+                panel.style.height = 'auto'; // Відновлюємо висоту
+            } else {
+                content.style.display = 'none';
+                chevron.style.transform = 'rotate(180deg)';
+                panel.style.height = 'auto'; // Панель займе висоту тільки заголовка
+            }
+        }
     </script>
 </body>
 
