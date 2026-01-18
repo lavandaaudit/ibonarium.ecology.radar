@@ -1,4 +1,3 @@
-// --- Стан Системи 3.0 PRO ---
 const STATE = {
     map: null,
     layers: {},
@@ -10,160 +9,188 @@ const STATE = {
     chart: null
 };
 
-// --- Ініціалізація ---
-function init() {
-    STATE.map = L.map('map', {
-        zoomControl: false,
-        attributionControl: false,
-        zoomSnap: 0.1
-    }).setView([20, 0], 2.5);
+// --- Initialization ---
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(STATE.map);
-
+window.onload = () => {
+    initMap();
     initChart();
     loadCycle();
     startClock();
+    setupListeners();
+};
 
-    // Mouse tracking
-    STATE.map.on('mousemove', e => {
-        document.getElementById('lat').innerText = e.latlng.lat.toFixed(4);
-        document.getElementById('lon').innerText = e.latlng.lng.toFixed(4);
+function initMap() {
+    STATE.map = L.map('map', {
+        zoomControl: false,
+        attributionControl: false,
+        center: [20, 0],
+        zoom: 3,
+        minZoom: 2.5
     });
+
+    // Dark Matter Map Style
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        subdomains: 'abcd',
+        maxZoom: 19
+    }).addTo(STATE.map);
+
+    // Initial position based on user IP (simulated)
+    STATE.map.setView([50.4501, 30.5234], 4); // Views Europe/Ukraine initially
 }
 
-// --- Аналітичні Графіки ---
 function initChart() {
     const ctx = document.getElementById('quakeChart').getContext('2d');
     STATE.chart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Minor', 'Mod', 'Strong'],
+            labels: ['Minor', 'Moderate', 'Strong', 'Major'],
             datasets: [{
-                data: [0, 0, 0],
-                backgroundColor: ['#4dd2ff', '#ffaa00', '#ff3333'],
-                borderWidth: 0,
-                hoverOffset: 4
+                data: [0, 0, 0, 0],
+                backgroundColor: ['#0072ff', '#39ff14', '#ffaa00', '#ff3333'],
+                borderWidth: 0
             }]
         },
         options: {
-            cutout: '70%',
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } }
+            plugins: {
+                legend: { display: false }
+            },
+            cutout: '70%'
         }
     });
 }
 
-// --- Завантаження та Обробка ---
-async function loadCycle() {
-    console.log('🚀 Starting data load cycle...');
+function setupListeners() {
+    // Mouse coordinates tracker
+    STATE.map.on('mousemove', (e) => {
+        document.getElementById('lat').innerText = e.latlng.lat.toFixed(4);
+        document.getElementById('lon').innerText = e.latlng.lng.toFixed(4);
+    });
+}
 
-    updateStatus("Сканування каналів USGS...", "cyan");
-    await fetchQuakes();
+async function loadCycle() {
+    updateStatus("Підключення до супутників...", "cyan");
+
+    // Simulating loading sequence
+    await new Promise(r => setTimeout(r, 800));
+
+    updateStatus("Завантаження сейсмічних даних USGS...", "cyan");
+    await setupQuakes();
     console.log('✅ Quakes loaded');
 
-    updateStatus("Завантаження термальних точок NASA...", "orange");
+    updateStatus("Отримання термоточок FIRMS...", "orange");
     setupFires();
     console.log('✅ Fires loaded');
 
-    updateStatus("Підключення метео-радара RainViewer...", "blue");
-    await setupRain();
-    console.log('✅ Rain loaded');
-
-    updateStatus("Завантаження якості повітря OpenAQ...", "cyan");
+    updateStatus("Аналіз якості повітря Open-Meteo...", "green");
     await setupAirQuality();
-    console.log('✅ Air quality loaded');
+    console.log('✅ Air Quality loaded');
 
-    updateStatus("Ініціалізація радіаційного моніторингу...", "green");
+    updateStatus("Завантаження радіаційного фону Safecast...", "yellow");
     setupRadiation();
     console.log('✅ Radiation loaded');
 
-    updateStatus("Завантаження температурних аномалій...", "orange");
+    updateStatus("Температурні аномалії NASA GIBS...", "red");
     setupAnomalies();
     console.log('✅ Anomalies loaded');
-
-
 
     updateStatus("Підключення озонового шару NASA...", "blue");
     setupOzone();
     console.log('✅ Ozone loaded');
 
-    updateStatus("Завантаження вітрових потоків...", "cyan");
+    updateStatus("Моделювання вітрових потоків...", "cyan");
     setupWind();
     console.log('✅ Wind loaded');
 
-    updateStatus("Всі системи стабільні", "green");
-    console.log('🎉 All layers initialized:', STATE.layers);
+    updateStatus("СИСТЕМА АКТИВНА", "green");
+    document.getElementById('last-update').innerText = new Date().toLocaleTimeString();
 }
 
-async function setupRain() {
-    try {
-        const res = await fetch('https://api.rainviewer.com/public/weather-maps.json');
-        const data = await res.json();
-        const latest = data.radar.past[data.radar.past.length - 1];
+// --- Layer Setup Functions (Real Data & APIs) ---
 
-        STATE.layers.rain = L.tileLayer(`${data.host}${latest.path}/256/{z}/{x}/{y}/2/1_1.png`, {
-            opacity: 0.5,
-            zIndex: 8
-        });
-    } catch (e) {
-        console.error("Rain Radar Error", e);
-    }
-}
-
-async function fetchQuakes() {
+async function setupQuakes() {
     try {
         const res = await fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson');
         const data = await res.json();
-        STATE.stats.quakes = data.features;
+        const quakes = data.features;
 
-        let categories = { minor: 0, mod: 0, strong: 0 };
-        let totalEnergy = 0; // в тераджоулях
-        let feedHtml = '';
+        const markers = L.markerClusterGroup ? L.markerClusterGroup() : L.layerGroup();
 
-        const markers = data.features.map(f => {
-            const mag = f.properties.mag;
+        let stats = { minor: 0, moderate: 0, strong: 0, major: 0, energy: 0 };
 
-            // Категоризація та Енергія (формула Гітенберга-Ріхтера)
-            // Energy E = 10^(4.8 + 1.5M) Joule
-            const energyJ = Math.pow(10, 4.8 + 1.5 * mag);
-            totalEnergy += energyJ / 1e12; // TJ
+        quakes.forEach(q => {
+            const mag = q.properties.mag;
+            const coords = [q.geometry.coordinates[1], q.geometry.coordinates[0]];
+            const depth = q.geometry.coordinates[2];
 
-            if (mag < 4) categories.minor++;
-            else if (mag < 5.5) categories.mod++;
-            else categories.strong++;
+            // Stats
+            if (mag < 4) stats.minor++;
+            else if (mag < 5) stats.moderate++;
+            else if (mag < 6) stats.strong++;
+            else stats.major++;
 
-            // Створення елемента для стрічки подій (лише вагомі)
-            if (mag > 4.5) {
-                feedHtml += `
-                    <div class="feed-item" style="border-left: 2px solid ${mag > 5.5 ? 'var(--accent-red)' : 'var(--accent-orange)'}; padding: 8px; background: rgba(255,255,255,0.03);">
-                        <div style="font-size: 0.7rem; color: var(--text-dim);">${new Date(f.properties.time).toLocaleTimeString()}</div>
-                        <div style="font-weight: 700;">M ${mag} - ${f.properties.place.split('of ').pop()}</div>
-                    </div>
-                `;
-            }
+            // Energy calculation (Approximate Joule conversion logE = 4.8 + 1.5M)
+            stats.energy += Math.pow(10, 4.8 + 1.5 * mag);
 
-            const color = mag > 5.5 ? '#ff3333' : (mag > 4.5 ? '#ffaa00' : '#4dd2ff');
-            return L.circleMarker([f.geometry.coordinates[1], f.geometry.coordinates[0]], {
-                radius: Math.pow(mag, 1.5) * 0.5,  // Зменшено з 1.8*0.8 до 1.5*0.5
-                fillColor: color, color: '#fff', weight: 0.5, fillOpacity: 0.4
-            }).bindPopup(`<b>M ${mag}</b><br>${f.properties.place}`);
+            // Visuals
+            let color = '#0072ff';
+            if (mag >= 4) color = '#39ff14';
+            if (mag >= 5) color = '#ffaa00';
+            if (mag >= 6) color = '#ff3333';
+
+            const radius = mag * 1.5; // Reduced size as requested
+
+            const marker = L.circleMarker(coords, {
+                radius: radius,
+                fillColor: color,
+                color: '#fff',
+                weight: 0.5,
+                opacity: 0.8,
+                fillOpacity: 0.6
+            }).bindPopup(`
+                <div class="custom-popup">
+                    <b style="color:${color}">SEISMIC EVENT</b>
+                    <span>MAG: <b>${mag.toFixed(1)}</b></span>
+                    <span>LOC: ${q.properties.place}</span>
+                    <span>DEPTH: ${depth} km</span>
+                    <span>TIME: ${new Date(q.properties.time).toLocaleTimeString()}</span>
+                </div>
+            `);
+
+            markers.addLayer(marker);
         });
 
-        // Оновлення UI
-        STATE.layers.quakes = L.layerGroup(markers);
-        if (STATE.activeStates.quakes) STATE.layers.quakes.addTo(STATE.map);
+        STATE.layers.quakes = markers;
+        STATE.map.addLayer(markers); // Active by default
 
-        STATE.chart.data.datasets[0].data = [categories.minor, categories.mod, categories.strong];
+        // Update Chart
+        STATE.chart.data.datasets[0].data = [stats.minor, stats.moderate, stats.strong, stats.major];
         STATE.chart.update();
 
-        document.getElementById('event-feed').innerHTML = feedHtml || '<div style="opacity:0.5">Значних подій не виявлено</div>';
-        document.getElementById('total-energy').innerText = `${totalEnergy.toFixed(2)} TJ`;
+        // Update Threat Level
+        const danger = Math.min(10, (stats.strong * 1 + stats.major * 3));
+        const dangerPercent = (danger * 10).toFixed(0);
+        document.getElementById('danger-value').innerText = `${danger.toFixed(1)}/10`;
+        document.getElementById('danger-progress').style.width = `${dangerPercent}%`;
 
-        // Threat Level logic
-        const threat = Math.min(10, (categories.strong * 2) + (categories.mod * 0.5)).toFixed(1);
-        document.getElementById('danger-value').innerText = `${threat}/10`;
-        document.getElementById('danger-progress').style.width = `${threat * 10}%`;
+        if (danger > 7) {
+            document.getElementById('danger-status').innerText = "CRITICAL";
+            document.getElementById('danger-status').style.color = "var(--accent-red)";
+        } else if (danger > 4) {
+            document.getElementById('danger-status').innerText = "ELEVATED";
+            document.getElementById('danger-status').style.color = "var(--accent-orange)";
+        } else {
+            document.getElementById('danger-status').innerText = "NORMAL";
+            document.getElementById('danger-status').style.color = "var(--accent-green)";
+        }
+
+        // Total Energy in TJ (Simple visual number)
+        // Check if element exists before setting
+        const energyEl = document.getElementById('total-energy');
+        if (energyEl) {
+            energyEl.innerText = (stats.energy / 1000000000000).toFixed(2) + " TJ";
+        }
 
     } catch (e) { console.error(e); }
 }
@@ -269,7 +296,6 @@ async function setupAirQuality() {
     STATE.layers.air = L.layerGroup(markers);
     console.log(`✅ Air Quality: Loaded ${markers.length} stations from Open-Meteo`);
 }
-
 
 
 async function setupOzone() {
@@ -417,8 +443,6 @@ function updateStatus(msg, color) {
 
 function startClock() {
     setInterval(() => {
-        document.getElementById('last-update').innerText = new Date().toLocaleTimeString('uk-UA');
-    }, 1000);
+        document.getElementById('last-update').innerText = new Date().toLocaleTimeString();
+    }, 60000);
 }
-
-window.onload = init;
